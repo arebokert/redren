@@ -7,13 +7,6 @@ from shutil import copy2
 from dateutil.parser import parse
 import argparse
 
-created = False
-year = ""
-quality = ""
-album = ""
-performer = ""
-output = ""
-
 def main():
    parser = argparse.ArgumentParser()
    parser.add_argument("-i","--input", type=str, help="Input directory to gather files from",
@@ -49,13 +42,23 @@ def main():
    print("Format of input files is " + albumformat)
    print("Recurse through subfolders in input folder: " + str(recursion).lower())
 
-   
+   scanFolder(inputfolder, outputfolder, albumformat, recursion)
 
-def scanFolder(folder, recursion):
-   for filename in os.listdir(folder):
+def scanFolder(inputfolder, outputfolder, albumformat, recursion):
+   created = False
+   year = ""
+   quality = ""
+   album = ""
+   performer = ""
+   output = ""
+   for filename in os.listdir(inputfolder):
+      print("\nProcessing file/dir: " + inputfolder + filename)
+      currentfolder = inputfolder + "/" + filename
+      if os.path.isdir(currentfolder) and recursion:
+         print("Current file is a folder and recursion is activated, diving in...")
+         scanFolder(currentfolder, outputfolder, albumformat, True)
       ext = os.path.splitext(filename)[1]
-      print("\nProcessing file: " + filename)
-      if ext.lower() in [".mp3",".flac",".aac","ac3",".dts"]:
+      if ext.lower() in [".mp3",".flac",".aac",".ac3",".dts"]:
          print("Found audio file")
          if created == False:
             process = subprocess.Popen("mediainfo " + ' --Inform="General;%Album%,.,%Performer%,.,%Recorded_Date%,.,%Original/Released_Date%,.,%Released_Date%" ' + '"' + filename + '"', cwd=inputfolder, shell="true", stdout=subprocess.PIPE)
@@ -113,7 +116,7 @@ def scanFolder(folder, recursion):
                print("Album: " + album)
                print("Year: " + year)
                print("Quality: " + quality)
-               output = performer + " - " + album + " [" + year + "] [" + albumformat + "] [" + quality + "]"
+               output = outputfolder + "/" + performer + " - " + album + " [" + year + "] [" + albumformat + "] [" + quality + "]"
                if not os.path.isdir(output):
                   print("Creating dir: " + output)
                   os.makedirs(output)
@@ -132,7 +135,7 @@ def scanFolder(folder, recursion):
 
          if os.path.isdir(output):
             print("Creating new file: " + out.rstrip())
-            copy2(folder + "/" + filename, output)
+            copy2(inputfolder + "/" + filename, output)
             os.rename(output + "/" + filename, output + "/" + out.rstrip())
 
 if __name__ == "__main__":
