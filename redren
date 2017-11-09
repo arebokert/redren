@@ -7,6 +7,13 @@ from shutil import copy2
 from dateutil.parser import parse
 import argparse
 
+created = False
+year = ""
+quality = ""
+album = ""
+performer = ""
+output = ""
+
 def main():
    parser = argparse.ArgumentParser()
    parser.add_argument("-i","--input", type=str, help="Input directory to gather files from",
@@ -42,18 +49,13 @@ def main():
    print("Format of input files is " + albumformat)
    print("Recurse through subfolders in input folder: " + str(recursion).lower())
 
-   created = False
-   year = ""
-   quality = ""
-   album = ""
-   performer = ""
-   output = ""
+   
 
 def scanFolder(folder, recursion):
    for filename in os.listdir(folder):
       ext = os.path.splitext(filename)[1]
       print("\nProcessing file: " + filename)
-      if ext.lower() in [".mp3",".flac"]:
+      if ext.lower() in [".mp3",".flac",".aac","ac3",".dts"]:
          print("Found audio file")
          if created == False:
             process = subprocess.Popen("mediainfo " + ' --Inform="General;%Album%,.,%Performer%,.,%Recorded_Date%,.,%Original/Released_Date%,.,%Released_Date%" ' + '"' + filename + '"', cwd=inputfolder, shell="true", stdout=subprocess.PIPE)
@@ -83,6 +85,10 @@ def scanFolder(folder, recursion):
              
             if ext.lower() == ".flac":
                quality = "FLAC"
+            elif ext.lower() == ".ac3":
+               quality = "AC3"
+            elif ext.lower() == ".aac":
+               quality = "AAC"
             elif ext.lower() == ".mp3":
                process = subprocess.Popen("mediainfo " + ' --Inform="Audio;%BitRate%,.,%BitRate_Mode%,.,%Format_Version%" '+ '"' + filename + '"', cwd=inputfolder, shell="true", stdout=subprocess.PIPE)
                out, err = process.communicate()
