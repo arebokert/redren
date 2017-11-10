@@ -1,1 +1,7 @@
+# Music files used in testing #
+###############################
 *.mp3
+*.aac
+*.ac3
+*.dts
+*.flac
