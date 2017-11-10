@@ -52,7 +52,7 @@ def scanFolder(inputfolder, outputfolder, albumformat, recursion):
    performer = ""
    output = ""
    for filename in os.listdir(inputfolder):
-      print("\nProcessing file/dir: " + inputfolder + filename)
+      print("\nProcessing file/folder: " + inputfolder + filename)
       currentfolder = inputfolder + "/" + filename
       if os.path.isdir(currentfolder) and recursion:
          print("Current file is a folder and recursion is activated, diving in...")
@@ -111,17 +111,17 @@ def scanFolder(inputfolder, outputfolder, albumformat, recursion):
                   quality = "undefined"
 
             if quality != "" and year != "" and performer != "" and album != "":
-               print("Got params for directory creation: ")
+               print("Got params for folder creation: ")
                print("Performer: " + performer)
                print("Album: " + album)
                print("Year: " + year)
                print("Quality: " + quality)
                output = outputfolder + "/" + performer + " - " + album + " [" + year + "] [" + albumformat + "] [" + quality + "]"
                if not os.path.isdir(output):
-                  print("Creating dir: " + output)
+                  print("Creating folder: " + output)
                   os.makedirs(output)
                else:
-                  print("Dir " + output + " already exists")
+                  print("Folder " + output + " already exists")
                created = True
 
          process = subprocess.Popen("mediainfo " + ' --Inform="General;%Track/Position% - %Performer% - %Title%.%FileExtension%" ' + '"' + filename + '"', cwd=inputfolder, shell="true", stdout=subprocess.PIPE)
